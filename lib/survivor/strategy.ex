@@ -9,7 +9,10 @@ defmodule Survivor.Strategy do
     %Survivor.Strategy{picks: [pick|strategy.picks]}
   end
 
+  # TODO revisit perf for this
   def is_legal(strategy) do
-    true
+    winners = strategy.picks |> Enum.map(&Survivor.Pick.winner(&1))
+    uniq_winners = winners |> Enum.uniq()
+    length(winners) == length(uniq_winners)
   end
 end
