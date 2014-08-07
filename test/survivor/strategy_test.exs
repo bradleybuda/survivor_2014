@@ -30,4 +30,9 @@ defmodule Survivor.StrategyTest do
     strategy = Survivor.Strategy.with_pick(Survivor.Strategy.with_pick(Survivor.Strategy.empty(), pick_1), pick_2)
     assert Survivor.Strategy.is_legal(strategy) == false
   end
+
+  test "empty strategy has 32 successors" do
+    successors = Survivor.Strategy.successors(Survivor.Strategy.empty())
+    assert 32 == length(successors)
+  end
 end

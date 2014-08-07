@@ -1,4 +1,5 @@
 defmodule Survivor.Strategy do
+  # TODO just make strategy a list not a struct
   defstruct picks: []
 
   def empty() do
@@ -14,5 +15,9 @@ defmodule Survivor.Strategy do
     winners = strategy.picks |> Enum.map(&Survivor.Pick.winner(&1))
     uniq_winners = winners |> Enum.uniq()
     length(winners) == length(uniq_winners)
+  end
+
+  def successors(strategy) do
+    Survivor.Team.all() |> Enum.map(&with_pick(strategy, &1))
   end
 end
