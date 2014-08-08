@@ -13,6 +13,6 @@ defmodule Survivor.TeamTest do
 
   test "can get a team from the list by name" do
     teams = Survivor.Team.load_all_from_disk()
-    oakland = Survivor.Team.get(teams, "OAK")
+    Survivor.Team.get(teams, "OAK")
   end
 end
