@@ -6,7 +6,7 @@ defmodule Survivor.GameTest do
     ari = Survivor.Team.get("ARI")
     game = %Survivor.Game{home_team: den, away_team: ari, week: 1}
 
-    picks = Survivor.Game.picks_for_game(game)
+    picks = Enum.to_list Survivor.Game.picks_for_game(game)
     assert 2 == length(picks)
     [pick_a, pick_b] = picks
     assert pick_a != pick_b

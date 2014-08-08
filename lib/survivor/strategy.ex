@@ -10,7 +10,7 @@ defmodule Survivor.Strategy do
     %Survivor.Strategy{picks: [pick|strategy.picks]}
   end
 
-  # TODO revisit perf for this
+  # TODO this is probably slow, revisit
   def is_legal(strategy) do
     winners = strategy.picks |> Enum.map(&Survivor.Pick.winner(&1))
     uniq_winners = winners |> Enum.uniq()
@@ -19,8 +19,8 @@ defmodule Survivor.Strategy do
 
   def successors(strategy, week_schedule) do
     week_schedule |>
-      Enum.flat_map(&Survivor.Game.picks_for_game(&1)) |>
-      Enum.map(&with_pick(strategy, &1)) |>
-      Enum.filter(&is_legal(&1))
+      Stream.flat_map(&Survivor.Game.picks_for_game(&1)) |>
+      Stream.map(&with_pick(strategy, &1)) |>
+      Stream.filter(&is_legal(&1))
   end
 end

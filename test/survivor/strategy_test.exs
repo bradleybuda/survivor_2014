@@ -34,7 +34,7 @@ defmodule Survivor.StrategyTest do
   test "empty strategy has 32 successors" do
     [week_1|_] = Survivor.Schedule.load_from_disk()
     successors = Survivor.Strategy.successors(Survivor.Strategy.empty(), week_1)
-    assert 32 == length(successors)
+    assert 32 == length(Enum.to_list(successors))
   end
 
   test "after first pick, only 31 successors" do
@@ -44,6 +44,6 @@ defmodule Survivor.StrategyTest do
     pick = %Survivor.Pick{game: game1, home_victory: true}
     strategy = Survivor.Strategy.with_pick(Survivor.Strategy.empty(), pick)
     successors = Survivor.Strategy.successors(strategy, week2)
-    assert 31 == length(successors)
+    assert 31 == length(Enum.to_list(successors))
   end
 end
