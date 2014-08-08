@@ -8,8 +8,11 @@ defmodule Survivor.Strategy do
   end
 
   def survival_probability(strategy) do
-    Enum.reduce strategy, 1.0, fn pick, acc ->
-      Survivor.Pick.probability(pick) * acc
+    case strategy do
+      [] ->
+        1.0
+      [pick|rest] ->
+        Survivor.Pick.probability(pick) * survival_probability(rest)
     end
   end
 
