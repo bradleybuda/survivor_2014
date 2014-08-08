@@ -1,12 +1,8 @@
 defmodule Survivor.Team do
   defstruct name: ""
 
-  def get(name) do
-    %Survivor.Team{name: name}
-  end
-
-  def all() do
-    [
+  def load_all_from_disk do
+    all = [
      %Survivor.Team{name: "CHI"},
      %Survivor.Team{name: "DET"},
      %Survivor.Team{name: "GB"},
@@ -47,5 +43,12 @@ defmodule Survivor.Team do
      %Survivor.Team{name: "OAK"},
      %Survivor.Team{name: "SD"},
     ]
+
+    Enum.group_by all, fn team -> team.name end
+  end
+
+  def get(teams, name) do
+    {:ok, [team|_]} = Dict.fetch(teams, name)
+    team
   end
 end
