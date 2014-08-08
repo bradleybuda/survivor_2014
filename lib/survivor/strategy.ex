@@ -63,6 +63,7 @@ defmodule Survivor.Strategy do
     week_schedule |>
       Stream.flat_map(&Survivor.Game.picks_for_game(&1)) |>
       Stream.map(&with_pick(strategy, &1)) |>
-      Stream.filter(&is_legal(&1))
+      Stream.filter(&is_legal(&1)) |>
+      Stream.filter(&(survival_probability(&1) > 0.01))
   end
 end

@@ -1,3 +1,6 @@
+* Stop search at some fixed threshold (under 1% ?)
+* How to conduct search?
+* Memoize recursive computations
 * Adjust probability toward mean over time
 * Which metric - final survival? survival at week N? cumulative survival?
 * Search portfolio of strategies
@@ -10,3 +13,4 @@
 * Update existing strategy based on results
 * Multicore
 * Understand namespacing
+* Profile and speed up
