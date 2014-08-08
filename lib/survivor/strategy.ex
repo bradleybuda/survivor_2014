@@ -16,30 +16,35 @@ defmodule Survivor.Strategy do
     end
   end
 
-  # TODO this (and aux functions) are probably slow, revisit
   def is_legal(strategy) do
-    winners_okay = Dict.values(win_counts(strategy)) |> Enum.all? &(&1 <= 1)
-    losers_okay = Dict.values(loss_counts(strategy)) |> Enum.all? &(&1 <= 3)
-    winners_okay and losers_okay
-  end
-
-  defp win_counts(strategy) do
-    case strategy do
-      [] ->
-        %{}
-      [pick|rest] ->
-        winner = Survivor.Pick.winner(pick)
-        Dict.update(win_counts(rest), winner, 1, &(&1 + 1))
+    Dict.values(team_pick_counts(strategy)) |> Enum.all? fn team_pick_count ->
+      case team_pick_count do
+        {wins, losses} when wins > 1 or losses > 3 ->
+          false
+        _ ->
+          true
+      end
     end
   end
 
-  defp loss_counts(strategy) do
+  defp team_pick_counts(strategy) do
     case strategy do
       [] ->
         %{}
       [pick|rest] ->
+        counts = team_pick_counts(rest)
+        winner = Survivor.Pick.winner(pick)
         loser = Survivor.Pick.loser(pick)
-        Dict.update(loss_counts(rest), loser, 1, &(&1 + 1))
+
+        dict_with_winner = Dict.update counts, winner, {1, 0}, fn r ->
+          {wins, losses} = r
+          {wins + 1, losses}
+        end
+
+        Dict.update dict_with_winner, loser, {0, 1}, fn r ->
+          {wins, losses} = r
+          {wins, losses + 1}
+        end
     end
   end
 
