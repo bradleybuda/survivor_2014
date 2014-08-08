@@ -4,7 +4,7 @@ defmodule Survivor.Portfolio do
       0 ->
         []
       _ ->
-        [Survivor.Strategy.empty()|empty_with_entries(entry_count - 1)]
+        [Survivor.Entry.empty()|empty_with_entries(entry_count - 1)]
     end
   end
 
@@ -12,15 +12,15 @@ defmodule Survivor.Portfolio do
     case portfolio do
       [] ->
         [[]]
-      [strategy|rest] ->
-        without_this_strategy = subportfolios(rest)
-        with_this_strategy = without_this_strategy |> Enum.map(&([strategy|&1]))
-        with_this_strategy ++ without_this_strategy
+      [entry|rest] ->
+        without_this_entry = subportfolios(rest)
+        with_this_entry = without_this_entry |> Enum.map(&([entry|&1]))
+        with_this_entry ++ without_this_entry
     end
   end
 
   # [{a def b}], [{b def a}]
-  # 100% survival probability, but at most one strategy remains
+  # 100% survival probability, but at most one entry remains
   #
   # Pportfolio = Pentry1 || Pentry2 || ... || PentryN
   #

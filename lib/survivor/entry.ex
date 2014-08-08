@@ -1,14 +1,14 @@
-defmodule Survivor.Strategy do
+defmodule Survivor.Entry do
   def empty() do
     []
   end
 
-  def with_pick(strategy, pick) do
-    [pick|strategy]
+  def with_pick(entry, pick) do
+    [pick|entry]
   end
 
-  def survival_probability(strategy) do
-    case strategy do
+  def survival_probability(entry) do
+    case entry do
       [] ->
         1.0
       [pick|rest] ->
@@ -16,8 +16,8 @@ defmodule Survivor.Strategy do
     end
   end
 
-  def is_legal(strategy) do
-    Dict.values(team_pick_counts(strategy)) |> Enum.all? fn team_pick_count ->
+  def is_legal(entry) do
+    Dict.values(team_pick_counts(entry)) |> Enum.all? fn team_pick_count ->
       case team_pick_count do
         {wins, losses} when wins > 1 or losses > 3 ->
           false
@@ -27,8 +27,8 @@ defmodule Survivor.Strategy do
     end
   end
 
-  defp team_pick_counts(strategy) do
-    case strategy do
+  defp team_pick_counts(entry) do
+    case entry do
       [] ->
         %{}
       [pick|rest] ->
@@ -59,10 +59,10 @@ defmodule Survivor.Strategy do
     end
   end
 
-  def successors(strategy, week_schedule) do
+  def successors(entry, week_schedule) do
     week_schedule |>
       Stream.flat_map(&Survivor.Game.picks_for_game(&1)) |>
-      Stream.map(&with_pick(strategy, &1)) |>
+      Stream.map(&with_pick(entry, &1)) |>
       Stream.filter(&is_legal(&1)) |>
       Stream.filter(&(survival_probability(&1) > 0.01))
   end
