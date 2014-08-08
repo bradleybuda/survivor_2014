@@ -49,6 +49,6 @@ defmodule Survivor.StrategyTest do
 
   test "lazy list of all possible strategies" do
     schedule = Survivor.Schedule.load_from_disk()
-    strategies = Survivor.Strategy.all(schedule)
+    Survivor.Strategy.all(schedule)
   end
 end
