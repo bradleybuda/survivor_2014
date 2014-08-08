@@ -7,4 +7,13 @@ defmodule Survivor.Game do
       %Survivor.Pick{game: game, home_victory: home_victory}
     end
   end
+
+  def home_victory_probability(game) do
+    # TODO totally invented win probability function. Replace with
+    # something real.
+
+    base_p = 0.55 # Home-field advantage
+    dvoa_delta = game.home_team.dvoa - game.away_team.dvoa
+    base_p + (dvoa_delta / 2.0)
+  end
 end

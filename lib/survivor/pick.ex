@@ -11,6 +11,17 @@ defmodule Survivor.Pick do
     loser
   end
 
+  def probability(pick) do
+    home_victory_p = Survivor.Game.home_victory_probability(pick.game)
+
+    case pick.home_victory do
+      true ->
+        home_victory_p
+      false ->
+        1.0 - home_victory_p
+    end
+  end
+
   defp winner_and_loser(pick) do
     game = pick.game
     teams = [game.home_team, game.away_team]
