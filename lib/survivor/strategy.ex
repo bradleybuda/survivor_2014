@@ -17,7 +17,10 @@ defmodule Survivor.Strategy do
     length(winners) == length(uniq_winners)
   end
 
-  def successors(strategy) do
-    Survivor.Team.all() |> Enum.map(&with_pick(strategy, &1))
+  def successors(strategy, week_schedule) do
+    week_schedule |>
+      Enum.flat_map(&Survivor.Game.picks_for_game(&1)) |>
+      Enum.map(&with_pick(strategy, &1)) |>
+      Enum.filter(&is_legal(&1))
   end
 end

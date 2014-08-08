@@ -3,8 +3,8 @@ defmodule Survivor.ScheduleTest do
 
   test "can load schedule data" do
     schedule = Survivor.Schedule.load_from_disk()
-    assert length(schedule) == (32 * 8)
-    [game|_] = schedule
-    assert game.week == 1
+    assert length(schedule) == (17)
+    [week1|_] = schedule
+    assert length(week1) == 16
   end
 end
