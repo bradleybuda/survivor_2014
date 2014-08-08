@@ -46,4 +46,9 @@ defmodule Survivor.StrategyTest do
     successors = Survivor.Strategy.successors(strategy, week2)
     assert 31 == length(Enum.to_list(successors))
   end
+
+  test "lazy list of all possible strategies" do
+    schedule = Survivor.Schedule.load_from_disk()
+    strategies = Survivor.Strategy.all(schedule)
+  end
 end

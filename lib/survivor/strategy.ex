@@ -17,6 +17,17 @@ defmodule Survivor.Strategy do
     length(winners) == length(uniq_winners)
   end
 
+  @doc """
+  Returns a `Stream` that is the same `length` as `schedule`. Each
+  entry is a `Stream` of all possible strategies up to that week.
+  """
+  def all(schedule) do
+    initial_strategies = [empty()]
+    Stream.scan schedule, initial_strategies, fn week_schedule, strategies ->
+      strategies |> Stream.flat_map &successors(&1, week_schedule)
+    end
+  end
+
   def successors(strategy, week_schedule) do
     week_schedule |>
       Stream.flat_map(&Survivor.Game.picks_for_game(&1)) |>
