@@ -7,6 +7,12 @@ defmodule Survivor.Strategy do
     [pick|strategy]
   end
 
+  def survival_probability(strategy) do
+    Enum.reduce strategy, 1.0, fn pick, acc ->
+      Survivor.Pick.probability(pick) * acc
+    end
+  end
+
   # TODO this (and aux functions) are probably slow, revisit
   def is_legal(strategy) do
     no_repeat_winners(strategy) and no_triple_losers(strategy)

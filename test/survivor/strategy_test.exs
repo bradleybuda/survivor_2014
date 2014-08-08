@@ -73,4 +73,27 @@ defmodule Survivor.StrategyTest do
     schedule = Survivor.Schedule.load_from_disk(teams)
     Survivor.Strategy.all(schedule)
   end
+
+  test "empty strategy has a 100% survival probability" do
+    assert 1.0 == Survivor.Strategy.survival_probability(Survivor.Strategy.empty())
+  end
+
+  test "strategy with one pick has that pick's survival probability" do
+    teams = Survivor.Team.load_all_from_disk
+    schedule = Survivor.Schedule.load_from_disk(teams)
+    all = Survivor.Strategy.all(schedule) |> Enum.to_list
+    [_, week_1_strategies|_] = all
+    [strategy|_] = week_1_strategies |> Enum.to_list
+    assert Survivor.Strategy.survival_probability(strategy) < 1.0
+  end
+
+  test "strategy with multiple picks has union of survival probabilities" do
+    teams = Survivor.Team.load_all_from_disk
+    schedule = Survivor.Schedule.load_from_disk(teams)
+    all = Survivor.Strategy.all(schedule) |> Enum.to_list
+    [_, _, week_3_strategies|_] = all
+    [strategy] = week_3_strategies |> Enum.take(1)
+
+    assert Survivor.Strategy.survival_probability(strategy) < 0.5
+  end
 end
