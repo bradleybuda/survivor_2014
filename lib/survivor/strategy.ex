@@ -7,11 +7,21 @@ defmodule Survivor.Strategy do
     [pick|strategy]
   end
 
-  # TODO this is probably slow, revisit
+  # TODO this (and aux functions) are probably slow, revisit
   def is_legal(strategy) do
+    no_repeat_winners(strategy) and no_triple_losers(strategy)
+  end
+
+  defp no_repeat_winners(strategy) do
     winners = strategy |> Enum.map(&Survivor.Pick.winner(&1))
     uniq_winners = winners |> Enum.uniq()
     length(winners) == length(uniq_winners)
+  end
+
+  defp no_triple_losers(strategy) do
+    losers = strategy |> Enum.map(&Survivor.Pick.loser(&1))
+    loser_groups = Enum.group_by losers, (fn l -> l end)
+    Dict.values(loser_groups) |> Enum.all? (fn gp -> Enum.count(gp) <= 3 end)
   end
 
   @doc """

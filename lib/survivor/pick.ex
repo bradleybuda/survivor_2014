@@ -9,4 +9,13 @@ defmodule Survivor.Pick do
         pick.game.away_team
     end
   end
+
+  def loser(pick) do
+    case pick.home_victory do
+      true ->
+        pick.game.away_team
+      false ->
+        pick.game.home_team
+    end
+  end
 end

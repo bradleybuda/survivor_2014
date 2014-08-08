@@ -31,6 +31,25 @@ defmodule Survivor.StrategyTest do
     assert Survivor.Strategy.is_legal(strategy) == false
   end
 
+  test "illegal to pick against the same team more than 3 times" do
+    game_1 = %Survivor.Game{home_team: %Survivor.Team{name: "DET"}, away_team: %Survivor.Team{name: "SF"}, week: 1}
+    pick_1 = %Survivor.Pick{game: game_1, home_victory: true}
+    game_2 = %Survivor.Game{home_team: %Survivor.Team{name: "SF"}, away_team: %Survivor.Team{name: "STL"}, week: 2}
+    pick_2 = %Survivor.Pick{game: game_2, home_victory: false}
+    game_3 = %Survivor.Game{home_team: %Survivor.Team{name: "SF"}, away_team: %Survivor.Team{name: "SEA"}, week: 3}
+    pick_3 = %Survivor.Pick{game: game_3, home_victory: false}
+    game_4 = %Survivor.Game{home_team: %Survivor.Team{name: "PIT"}, away_team: %Survivor.Team{name: "SF"}, week: 4}
+    pick_4 = %Survivor.Pick{game: game_4, home_victory: true}
+
+    strategy = Survivor.Strategy.empty |>
+      Survivor.Strategy.with_pick(pick_1) |>
+      Survivor.Strategy.with_pick(pick_2) |>
+      Survivor.Strategy.with_pick(pick_3) |>
+      Survivor.Strategy.with_pick(pick_4)
+
+    assert false == Survivor.Strategy.is_legal(strategy)
+  end
+
   test "empty strategy has 32 successors" do
     teams = Survivor.Team.load_all_from_disk
     [week_1|_] = Survivor.Schedule.load_from_disk(teams)
