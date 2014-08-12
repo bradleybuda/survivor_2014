@@ -27,28 +27,29 @@ defmodule Survivor.Portfolio do
 
   """
 
+  # TODO broken
   def survival_probability(portfolio) do
-    # get the picks for this week
-#    this_week_picks = Enum.map(portfolio, fn entry ->
-#      [pick|_] = entry
-#      pick
-#    end) |> Enum.uniq
-
-
-    # figure out every possible result for these picks by finding all
-    # combinations of negative and positive. Some of these are
-    # inconsistent and have p=0 (i.e. green bay wins and green bay
-    # loses)
-#    Enum.each possible_outcomes(this_week_picks), fn outcome ->
-#      p = Survivor.Pick.probability_of_all(outcome)
-#      remaining = remaining_portfolio_given_outcome(portfolio, outcome)
-
-      # Compute the survival probability of the remaining subportfolio
-      # and multiply it by the outcome probability, then sum up the
-      # total
-
-      # TODO
-#    end
+    case portfolio do
+      [] ->
+        0.0 # An empty portfolio is dead
+      [entry] ->
+        # Just one entry left, simple math
+        Survivor.Entry.survival_probability(entry)
+      [entry|_] ->
+        # Multiple entries are alive in the portfolio
+        case entry do
+          [] ->
+            1.0 # We've reached the "end" of this entry, so we've survived!
+          _ ->
+            # The entries still have picks remaining, time for the
+            # complex porfolio math
+            outcomes = possible_outcomes(portfolio)
+            Enum.reduce Dict.keys(outcomes), 0, fn (outcome, cumulative_p) ->
+              {:ok, outcome_portfolio} = Dict.fetch(outcomes, outcome)
+              cumulative_p + Survivor.PickSet.probability(outcome) * survival_probability(outcome_portfolio)
+            end
+        end
+    end
   end
 
   @doc """
