@@ -62,4 +62,8 @@ defmodule Survivor.Pick do
         Enum.reverse(teams)
     end
   end
+
+  def show(pick) do
+    "#{Survivor.Team.show(winner(pick))} def. #{Survivor.Team.show(loser(pick))} (#{pick.game.week})"
+  end
 end

@@ -16,4 +16,8 @@ defmodule Survivor.Game do
     dvoa_delta = game.home_team.dvoa - game.away_team.dvoa
     base_p + (dvoa_delta / 2.0)
   end
+
+  def show(game) do
+    "#{Survivor.Team.show(game.away_team)} @ #{Survivor.Team.show(game.home_team)} (#{game.week})"
+  end
 end
