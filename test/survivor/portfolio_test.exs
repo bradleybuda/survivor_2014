@@ -35,4 +35,11 @@ defmodule Survivor.PortfolioTest do
     portfolio = [entry, entry, entry]
     assert_in_delta Survivor.Portfolio.survival_probability(portfolio), Survivor.Entry.survival_probability(entry), 0.001
   end
+
+  test "a portfolio with opposing picks has 100% survival", %{schedule: schedule} do
+    [[game|_]|_] = schedule
+    portfolio = [[%Survivor.Pick{game: game, home_victory: true}], [%Survivor.Pick{game: game, home_victory: false}]]
+    IO.inspect portfolio
+    assert_in_delta Survivor.Portfolio.survival_probability(portfolio), 1.0, 0.001
+  end
 end
