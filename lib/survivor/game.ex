@@ -16,8 +16,11 @@ defmodule Survivor.Game do
     dvoa_delta = game.home_team.dvoa - game.away_team.dvoa
     base_p + (dvoa_delta / 2.0)
   end
+end
 
-  def show(game) do
-    "#{Survivor.Team.show(game.away_team)} @ #{Survivor.Team.show(game.home_team)} (#{game.week})"
+defimpl Inspect, for: Survivor.Game do
+  def inspect(game, _) do
+    # TODO this should probably use Inspect.Algebra
+    "#{inspect game.away_team} @ #{inspect game.home_team} (#{game.week})"
   end
 end

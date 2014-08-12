@@ -18,8 +18,10 @@ defmodule Survivor.Team do
     {:ok, [team|_]} = Dict.fetch(teams, name)
     team
   end
+end
 
-  def show(team) do
+defimpl Inspect, for: Survivor.Team do
+  def inspect(team, _) do
     team.name
   end
 end
