@@ -8,14 +8,48 @@ defmodule Survivor.Portfolio do
     end
   end
 
+  # TODO not sure this method is needed, might be replaced with possible_pick_sets
   def subportfolios(portfolio) do
     case portfolio do
-      [] ->
-        [[]]
+      [entry] ->
+        [[entry]]
       [entry|rest] ->
-        without_this_entry = subportfolios(rest)
-        with_this_entry = without_this_entry |> Enum.map(&([entry|&1]))
-        with_this_entry ++ without_this_entry
+        rest_without_this_entry = subportfolios(rest)
+        rest_with_this_entry = rest_without_this_entry |> Enum.map(&([entry|&1]))
+        [entry] ++ rest_with_this_entry ++ rest_without_this_entry
+    end
+  end
+
+  @doc """
+
+  The probability that a portfolio is still alive is the sum of the
+  probabilities of any of its subportfolios being alive.
+
+  """
+
+  def survival_probability(portfolio) do
+    # get the picks for this week
+    this_week_picks = Enum.map portfolio, fn entry ->
+      [pick|_] = entry
+      pick
+    end
+
+    # figure out every possible result for these picks by finding all
+    # combinations of negative and positive. some of these will be
+    # duplicates, and some will be p=0 (i.e. green bay wins and green
+    # bay loses)
+    poss = possible_pick_sets(this_week_picks)
+
+
+  end
+
+  def possible_pick_sets(picks) do
+    case picks do
+      [pick] ->
+        [[pick], [Survivor.Pick.not(pick)]]
+      [pick|rest] ->
+        Enum.map(possible_pick_sets(rest), &([pick|&1])) ++
+          Enum.map(possible_pick_sets(rest), &([Survivor.Pick.not(pick)|&1]))
     end
   end
 
@@ -61,4 +95,23 @@ defmodule Survivor.Portfolio do
   # Need a NOT operator for picks
   # Need an each_subportfolio for portfolio
   # Need a probability for subportfolio method
+
+  # Projecting a portfolio forward in time creates a tree with each
+  # node a portfolio and each edge a probability that you will
+  # transition from one living portfolio to another. The set of nodes
+  # is the power set of the entries in the portfolio across weeks. Due
+  # to conflicting picks, the transition probabilities are sometimes
+  # zero (i.e. there is no way to get from portfolio X in week 2 to
+  # portfolio Y in week 3).
+
+  # Maybe the model is wrong. Curently we have a pick (the atom), an
+  # entry (has many picks, one per week), and a portfolio (has many
+  # entries). Instead we could invert this and have a pick (an atom),
+  # a pick set (one or more picks in a given week) and a portfolio (a
+  # list of pick sets, one per week). The portfolio has a maximum pick
+  # set size. The confusing thing about this is that it's a little
+  # harder to keep track of the pick constraints from week to week.
+
+  # See if I can write the portfolio logic imperatively, then convert
+  # to functional / recursive / mathematical definition
 end
