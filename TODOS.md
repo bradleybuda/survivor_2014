@@ -1,4 +1,5 @@
-* Score portfolio of strategies
+* More portfolio scoring tests
+* Visualize portfolio evolution
 * Search portfolio of strategies
 * Stop search at some fixed threshold (under 1% ?)
 * How to conduct search?
@@ -11,5 +12,5 @@
   http://www.oddsshark.com/nfl/odds
 * Scrape power rankings
 * Multicore
-* Understand namespacing
 * Profile and speed up
+* Historic results - what week does the comptetition tend to end?
