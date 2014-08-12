@@ -29,27 +29,66 @@ defmodule Survivor.Portfolio do
 
   def survival_probability(portfolio) do
     # get the picks for this week
-    this_week_picks = Enum.map portfolio, fn entry ->
-      [pick|_] = entry
-      pick
-    end
+#    this_week_picks = Enum.map(portfolio, fn entry ->
+#      [pick|_] = entry
+#      pick
+#    end) |> Enum.uniq
+
 
     # figure out every possible result for these picks by finding all
-    # combinations of negative and positive. some of these will be
-    # duplicates, and some will be p=0 (i.e. green bay wins and green
-    # bay loses)
-    poss = possible_pick_sets(this_week_picks)
+    # combinations of negative and positive. Some of these are
+    # inconsistent and have p=0 (i.e. green bay wins and green bay
+    # loses)
+#    Enum.each possible_outcomes(this_week_picks), fn outcome ->
+#      p = Survivor.Pick.probability_of_all(outcome)
+#      remaining = remaining_portfolio_given_outcome(portfolio, outcome)
 
+      # Compute the survival probability of the remaining subportfolio
+      # and multiply it by the outcome probability, then sum up the
+      # total
 
+      # TODO
+#    end
   end
 
-  def possible_pick_sets(picks) do
-    case picks do
-      [pick] ->
-        [[pick], [Survivor.Pick.not(pick)]]
-      [pick|rest] ->
-        Enum.map(possible_pick_sets(rest), &([pick|&1])) ++
-          Enum.map(possible_pick_sets(rest), &([Survivor.Pick.not(pick)|&1]))
+  @doc """
+
+  Returns a dict showing all of the outcomes for the portfolio this
+  week. The keys of the dict are a set of picks, all of which must
+  come true for that outcome to transpire (see
+  `Survivor.Pick.probability_of_all` to manipulate these keys). The
+  values are the remaining portfolios that would result from this set
+  of picks (with this week stripped).
+
+  """
+
+  def possible_outcomes(portfolio) do
+    # Base case: no games picked, no subsequent portfolio
+    empty_outcome = Dict.put(HashDict.new, [], [])
+    possible_outcomes_recursive(portfolio, empty_outcome)
+  end
+
+  defp possible_outcomes_recursive(portfolio, outcomes) do
+    case portfolio do
+      [] ->
+        outcomes # Nothing remaining in the portfolio
+      [entry|remaining_portfolio] ->
+        # The portfolios are actually in reverse order, so go find the
+        # next chronological game at the end of the list. TODO how do
+        # we make this efficient? Feels broken.
+        # At least should add some helper methods to entry
+        [pick|remaining_reversed] = Enum.reverse(entry)
+        remaining_entry = Enum.reverse(remaining_reversed)
+
+        # Take each of the outcomes for this entry and add them to
+        # each of the existing outcomes
+        new_outcomes = Enum.reduce Dict.keys(outcomes), HashDict.new, fn(outcome, d) ->
+          {:ok, outcome_portfolio} = Dict.fetch(outcomes, outcome)
+          x = Dict.put(d, [pick|outcome], [remaining_entry|outcome_portfolio]) # This entry picks right, stays in portfolio
+          Dict.put(x, [Survivor.Pick.not(pick)|outcome], outcome_portfolio) # This entry picks wrong, drops from portfolio
+        end
+
+        possible_outcomes_recursive(remaining_portfolio, new_outcomes)
     end
   end
 
