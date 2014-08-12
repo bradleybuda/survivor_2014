@@ -34,14 +34,15 @@ defmodule Survivor.PortfolioTest do
     portfolio = week_3_strategies |> Enum.take(1)
     [entry] = portfolio
 
-#    assert Survivor.Portfolio.survival_probability(portfolio) ==
-#      Survivor.Entry.survival_probability(entry)
+    assert Survivor.Portfolio.survival_probability(portfolio) ==
+      Survivor.Entry.survival_probability(entry)
   end
 
   test "a two-entry portfolio has a survival probability", %{schedule: schedule} do
     all = Survivor.Entry.all(schedule) |> Enum.to_list
-    [_, _, week_3_strategies|_] = all
-    portfolio = week_3_strategies |> Enum.take(2)
+    [_, _, _, week_strategies|_] = all
+    :random.seed(:os.timestamp)
+    portfolio = week_strategies |> Enum.take(2)
 
     IO.puts Survivor.Portfolio.show(portfolio)
 
@@ -56,5 +57,6 @@ defmodule Survivor.PortfolioTest do
       IO.puts Survivor.Portfolio.show(portfolio)
     end
 
+    IO.puts Survivor.Portfolio.survival_probability(portfolio)
   end
 end
