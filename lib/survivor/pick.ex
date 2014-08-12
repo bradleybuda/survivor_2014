@@ -23,9 +23,8 @@ defmodule Survivor.Pick do
   end
 
   def not(pick) do
-    %{game: pick.game, home_victory: !pick.home_victory}
+    %{pick | home_victory: !pick.home_victory}
   end
-
 
   defp winner_and_loser(pick) do
     game = pick.game
