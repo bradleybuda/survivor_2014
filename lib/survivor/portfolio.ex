@@ -8,18 +8,6 @@ defmodule Survivor.Portfolio do
     end
   end
 
-  # TODO not sure this method is needed, might be replaced with possible_pick_sets
-  def subportfolios(portfolio) do
-    case portfolio do
-      [entry] ->
-        [[entry]]
-      [entry|rest] ->
-        rest_without_this_entry = subportfolios(rest)
-        rest_with_this_entry = rest_without_this_entry |> Enum.map(&([entry|&1]))
-        [entry] ++ rest_with_this_entry ++ rest_without_this_entry
-    end
-  end
-
   @doc """
 
   The probability that a portfolio is still alive is the sum of the
@@ -63,6 +51,7 @@ defmodule Survivor.Portfolio do
 
   """
 
+  # TODO this should be private
   def possible_outcomes(portfolio) do
     # Base case: no games picked, no subsequent portfolio
     empty_outcome = Dict.put(HashDict.new, [], [])
@@ -85,8 +74,8 @@ defmodule Survivor.Portfolio do
         # each of the existing outcomes
         new_outcomes = Enum.reduce Dict.keys(outcomes), HashDict.new, fn(outcome, d) ->
           {:ok, outcome_portfolio} = Dict.fetch(outcomes, outcome)
-          x = Dict.put(d, [pick|outcome], [remaining_entry|outcome_portfolio]) # This entry picks right, stays in portfolio
-          Dict.put(x, [Survivor.Pick.not(pick)|outcome], outcome_portfolio) # This entry picks wrong, drops from portfolio
+          x = Dict.put(d, Enum.uniq([pick|outcome]), [remaining_entry|outcome_portfolio]) # This entry picks right, stays in portfolio
+          Dict.put(x, Enum.uniq([Survivor.Pick.not(pick)|outcome]), outcome_portfolio) # This entry picks wrong, drops from portfolio
         end
 
         possible_outcomes_recursive(remaining_portfolio, new_outcomes)

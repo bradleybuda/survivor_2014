@@ -10,24 +10,6 @@ defmodule Survivor.PortfolioTest do
     Survivor.Portfolio.empty_with_entries(3)
   end
 
-  test "a portfolio of one strategy should have one subportfolio" do
-    portfolio = Survivor.Portfolio.empty_with_entries(1)
-    subportfolios = Survivor.Portfolio.subportfolios(portfolio)
-    assert length(subportfolios) == 1
-  end
-
-  test "a portfolio of two strategies should have three subportfolios" do
-    portfolio = Survivor.Portfolio.empty_with_entries(2)
-    subportfolios = Survivor.Portfolio.subportfolios(portfolio)
-    assert length(subportfolios) == 3
-  end
-
-  test "a portfolio of three strategies should have seven non-empty successor subportfolios" do
-    portfolio = Survivor.Portfolio.empty_with_entries(3)
-    subportfolios = Survivor.Portfolio.subportfolios(portfolio)
-    assert length(subportfolios) == 7
-  end
-
   test "a single-entry portfolio has a survival probability", %{schedule: schedule} do
     all = Survivor.Entry.all(schedule) |> Enum.to_list
     [_, _, week_3_strategies|_] = all
@@ -38,25 +20,19 @@ defmodule Survivor.PortfolioTest do
       Survivor.Entry.survival_probability(entry)
   end
 
-  test "a two-entry portfolio has a survival probability", %{schedule: schedule} do
+  test "an empty portfolio has zero survival probability" do
+    assert 0.0 == Survivor.Portfolio.survival_probability(Survivor.Portfolio.empty_with_entries(0))
+  end
+
+  test "a portfolio with completed entries has 100% survival" do
+    assert 1.0 == Survivor.Portfolio.survival_probability(Survivor.Portfolio.empty_with_entries(4))
+  end
+
+  test "a portfolio with three identical entries does not increase survival probability", %{schedule: schedule} do
     all = Survivor.Entry.all(schedule) |> Enum.to_list
-    [_, _, _, week_strategies|_] = all
-    :random.seed(:os.timestamp)
-    portfolio = week_strategies |> Enum.take(2)
-
-    IO.puts Survivor.Portfolio.show(portfolio)
-
-    IO.puts "outcomes:"
-
-    outcomes = Survivor.Portfolio.possible_outcomes(portfolio)
-
-    Enum.each Dict.keys(outcomes), fn pick_set ->
-      IO.puts Survivor.PickSet.show(pick_set)
-      IO.puts "=>"
-      portfolio = Dict.get(outcomes, pick_set)
-      IO.puts Survivor.Portfolio.show(portfolio)
-    end
-
-    IO.puts Survivor.Portfolio.survival_probability(portfolio)
+    [_, _, week_3_strategies|_] = all
+    [entry] = week_3_strategies |> Enum.take(1)
+    portfolio = [entry, entry, entry]
+    assert_in_delta Survivor.Portfolio.survival_probability(portfolio), Survivor.Entry.survival_probability(entry), 0.001
   end
 end
