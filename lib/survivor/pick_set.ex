@@ -1,15 +1,24 @@
+# Utility methods for working with a list of picks from the same
+# week. The list is assumed to be a conjunction - i.e. we expect ALL
+# of the picks in the list to come true. Lists are allowed to be
+# internally inconsistent, in which case they have probability zero.
 defmodule Survivor.PickSet do
-  # Utility methods for working with a list of picks from the same
-  # week. The list is assumed to be a conjunction - i.e. we expect ALL
-  # of the picks in the list to come true. Lists are allowed to be
-  # internally inconsistent, in which case they have probability zero.
+  defstruct picks: []
 
-  def probability(pick_set) do
-    probability_with_encounters pick_set, [], []
+  def empty() do
+    %Survivor.PickSet{picks: []}
   end
 
-  defp probability_with_encounters(pick_set, picks_encountered, games_encountered) do
-    case pick_set do
+  def add(pick_set, pick) do
+    %Survivor.PickSet{picks: Enum.sort(Enum.uniq [pick|pick_set.picks])}
+  end
+
+  def probability(pick_set) do
+    probability_with_encounters pick_set.picks, [], []
+  end
+
+  defp probability_with_encounters(pick_list, picks_encountered, games_encountered) do
+    case pick_list do
       [] ->
         1.0
       [pick|rest] ->
@@ -19,7 +28,7 @@ defmodule Survivor.PickSet do
           {true, true} ->
             # We've already handled this pick so it doesn't contribute to
             # the cumulative probability again
-            probability(rest)
+            probability_with_encounters(rest, picks_encountered, games_encountered)
           {false, true} ->
             # Uh oh, we've already picked this game the other way. Both outcomes cannot occur
             0.0
@@ -29,8 +38,11 @@ defmodule Survivor.PickSet do
         end
     end
   end
+end
 
-  def show(pick_set) do
-    Enum.map(pick_set, &Survivor.Pick.show(&1)) |> Enum.join(" & ")
+defimpl Inspect, for: Survivor.PickSet do
+  def inspect(pick_set, _) do
+    # TODO use algebra
+    Enum.map(pick_set.picks, fn p -> inspect p end) |> Enum.join(" & ")
   end
 end

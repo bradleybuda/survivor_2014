@@ -66,8 +66,4 @@ defmodule Survivor.Entry do
       Stream.filter(&is_legal(&1)) |>
       Stream.filter(&(survival_probability(&1) > 0.01))
   end
-
-  def show(entry) do
-    Survivor.PickSet.show(entry) # TODO better impl
-  end
 end

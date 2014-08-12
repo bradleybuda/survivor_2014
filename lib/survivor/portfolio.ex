@@ -54,8 +54,10 @@ defmodule Survivor.Portfolio do
   # TODO this should be private
   def possible_outcomes(portfolio) do
     # Base case: no games picked, no subsequent portfolio
-    empty_outcome = Dict.put(HashDict.new, [], [])
-    possible_outcomes_recursive(portfolio, empty_outcome)
+    empty_outcome = Dict.put(HashDict.new, Survivor.PickSet.empty(), [])
+    r = possible_outcomes_recursive(portfolio, empty_outcome)
+    IO.inspect r
+    r
   end
 
   defp possible_outcomes_recursive(portfolio, outcomes) do
@@ -74,15 +76,15 @@ defmodule Survivor.Portfolio do
         # each of the existing outcomes
         new_outcomes = Enum.reduce Dict.keys(outcomes), HashDict.new, fn(outcome, d) ->
           {:ok, outcome_portfolio} = Dict.fetch(outcomes, outcome)
-          x = Dict.put(d, Enum.uniq([pick|outcome]), [remaining_entry|outcome_portfolio]) # This entry picks right, stays in portfolio
-          Dict.put(x, Enum.uniq([Survivor.Pick.not(pick)|outcome]), outcome_portfolio) # This entry picks wrong, drops from portfolio
+
+          pick_set_with_correct_pick = Survivor.PickSet.add(outcome, pick)
+          x = Dict.put(d, pick_set_with_correct_pick, [remaining_entry|outcome_portfolio]) # This entry picks right, stays in portfolio
+
+          pick_set_with_incorrect_pick = Survivor.PickSet.add(outcome, Survivor.Pick.not(pick))
+          Dict.put(x, pick_set_with_incorrect_pick, outcome_portfolio) # This entry picks wrong, drops from portfolio
         end
 
         possible_outcomes_recursive(remaining_portfolio, new_outcomes)
     end
-  end
-
-  def show(portfolio) do
-   Enum.map(portfolio, fn e -> "[#{Survivor.Entry.show(e)}]" end) |> Enum.join(", ")
   end
 end
