@@ -17,8 +17,7 @@ defmodule Survivor.PortfolioTest do
     portfolio = week_3_strategies |> Enum.take(1)
     [entry] = portfolio
 
-    assert survival_probability(portfolio) ==
-      Survivor.Entry.survival_probability(entry)
+    assert survival_probability(portfolio) == Survivor.Entry.survival_probability(entry)
   end
 
   test "an empty portfolio has zero survival probability" do

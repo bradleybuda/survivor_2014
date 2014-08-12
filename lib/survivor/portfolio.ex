@@ -34,6 +34,7 @@ defmodule Survivor.Portfolio do
             outcomes = possible_outcomes(portfolio)
             Enum.reduce Dict.keys(outcomes), 0, fn (outcome, cumulative_p) ->
               {:ok, outcome_portfolio} = Dict.fetch(outcomes, outcome)
+              # TODO - short-circuit recursion if probability = 0
               cumulative_p + Survivor.PickSet.probability(outcome) * survival_probability(outcome_portfolio)
             end
         end
