@@ -51,13 +51,11 @@ defmodule Survivor.Portfolio do
 
   """
 
-  # TODO this should be private
+  # TODO make me private
   def possible_outcomes(portfolio) do
     # Base case: no games picked, no subsequent portfolio
     empty_outcome = Dict.put(HashDict.new, Survivor.PickSet.empty(), [])
-    r = possible_outcomes_recursive(portfolio, empty_outcome)
-    IO.inspect r
-    r
+    possible_outcomes_recursive(portfolio, empty_outcome)
   end
 
   defp possible_outcomes_recursive(portfolio, outcomes) do

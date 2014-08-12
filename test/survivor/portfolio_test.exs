@@ -1,5 +1,6 @@
 defmodule Survivor.PortfolioTest do
   use ExUnit.Case, async: true
+  import Survivor.Portfolio
 
   setup do
     teams = Survivor.Team.load_all_from_disk
@@ -39,7 +40,6 @@ defmodule Survivor.PortfolioTest do
   test "a portfolio with opposing picks has 100% survival", %{schedule: schedule} do
     [[game|_]|_] = schedule
     portfolio = [[%Survivor.Pick{game: game, home_victory: true}], [%Survivor.Pick{game: game, home_victory: false}]]
-    IO.inspect portfolio
     assert_in_delta Survivor.Portfolio.survival_probability(portfolio), 1.0, 0.001
   end
 end
