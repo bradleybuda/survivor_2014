@@ -37,8 +37,11 @@ defmodule Survivor.Pick do
         Enum.reverse(teams)
     end
   end
+end
 
-  def show(pick) do
-    "#{Survivor.Team.show(winner(pick))} def #{Survivor.Team.show(loser(pick))} (#{pick.game.week})"
+defimpl Inspect, for: Survivor.Pick do
+  def inspect(pick, _) do
+    # TODO use Inspect.Algebra
+    "#{inspect Survivor.Pick.winner(pick)} def #{inspect Survivor.Pick.loser(pick)} (#{pick.game.week})"
   end
 end
