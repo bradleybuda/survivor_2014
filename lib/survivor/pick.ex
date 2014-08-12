@@ -26,31 +26,6 @@ defmodule Survivor.Pick do
     %{game: pick.game, home_victory: !pick.home_victory}
   end
 
-  def probability_of_all(picks) do
-    probability_of_all_with_encounters picks, [], []
-  end
-
-  defp probability_of_all_with_encounters(picks, picks_encountered, games_encountered) do
-    case picks do
-      [] ->
-        1.0
-      [pick|rest] ->
-        encountered_pick = Enum.member?(picks_encountered, pick)
-        encountered_game = Enum.member?(games_encountered, pick.game)
-        case {encountered_pick, encountered_game} do
-          {true, true} ->
-            # We've already handled this pick so it doesn't contribute to
-            # the cumulative probability again
-            probability_of_all(rest)
-          {false, true} ->
-            # Uh oh, we've already picked this game the other way. Both outcomes cannot occur
-            0.0
-          {false, false} ->
-            # We haven't seen this game yet, so accumulate the probability
-            probability(pick) * probability_of_all_with_encounters(rest, [pick|picks_encountered], [pick.game|games_encountered])
-        end
-    end
-  end
 
   defp winner_and_loser(pick) do
     game = pick.game
@@ -64,6 +39,6 @@ defmodule Survivor.Pick do
   end
 
   def show(pick) do
-    "#{Survivor.Team.show(winner(pick))} def. #{Survivor.Team.show(loser(pick))} (#{pick.game.week})"
+    "#{Survivor.Team.show(winner(pick))} def #{Survivor.Team.show(loser(pick))} (#{pick.game.week})"
   end
 end

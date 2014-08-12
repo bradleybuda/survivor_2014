@@ -92,6 +92,10 @@ defmodule Survivor.Portfolio do
     end
   end
 
+  def show(portfolio) do
+   Enum.map(portfolio, fn e -> "[#{Survivor.Entry.show(e)}]" end) |> Enum.join(", ")
+  end
+
   # [{a def b}], [{b def a}]
   # 100% survival probability, but at most one entry remains
   #
