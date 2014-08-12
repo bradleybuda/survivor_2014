@@ -8,7 +8,7 @@ defmodule Survivor.PortfolioTest do
   end
 
   test "create an empty portfolio" do
-    Survivor.Portfolio.empty_with_entries(3)
+    empty_with_entries(3)
   end
 
   test "a single-entry portfolio has a survival probability", %{schedule: schedule} do
@@ -17,16 +17,16 @@ defmodule Survivor.PortfolioTest do
     portfolio = week_3_strategies |> Enum.take(1)
     [entry] = portfolio
 
-    assert Survivor.Portfolio.survival_probability(portfolio) ==
+    assert survival_probability(portfolio) ==
       Survivor.Entry.survival_probability(entry)
   end
 
   test "an empty portfolio has zero survival probability" do
-    assert 0.0 == Survivor.Portfolio.survival_probability(Survivor.Portfolio.empty_with_entries(0))
+    assert 0.0 == survival_probability(empty_with_entries(0))
   end
 
   test "a portfolio with completed entries has 100% survival" do
-    assert 1.0 == Survivor.Portfolio.survival_probability(Survivor.Portfolio.empty_with_entries(4))
+    assert 1.0 == survival_probability(empty_with_entries(4))
   end
 
   test "a portfolio with three identical entries does not increase survival probability", %{schedule: schedule} do
@@ -34,12 +34,12 @@ defmodule Survivor.PortfolioTest do
     [_, _, week_3_strategies|_] = all
     [entry] = week_3_strategies |> Enum.take(1)
     portfolio = [entry, entry, entry]
-    assert_in_delta Survivor.Portfolio.survival_probability(portfolio), Survivor.Entry.survival_probability(entry), 0.001
+    assert_in_delta survival_probability(portfolio), Survivor.Entry.survival_probability(entry), 0.001
   end
 
   test "a portfolio with opposing picks has 100% survival", %{schedule: schedule} do
     [[game|_]|_] = schedule
     portfolio = [[%Survivor.Pick{game: game, home_victory: true}], [%Survivor.Pick{game: game, home_victory: false}]]
-    assert_in_delta Survivor.Portfolio.survival_probability(portfolio), 1.0, 0.001
+    assert_in_delta survival_probability(portfolio), 1.0, 0.001
   end
 end
