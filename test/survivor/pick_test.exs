@@ -5,7 +5,7 @@ defmodule Survivor.PickTest do
     teams = Survivor.Team.load_all_from_disk
     den = Survivor.Team.get(teams, "DEN")
     ari = Survivor.Team.get(teams, "ARI")
-    game = %Survivor.Game{home_team: den, away_team: ari, week: 1}
+    game = Survivor.Game.make_game(den, ari, 1)
     {:ok, den: den, ari: ari, game: game}
   end
 

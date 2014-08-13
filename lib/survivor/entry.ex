@@ -77,10 +77,13 @@ defmodule Survivor.Entry do
   end
 
   def successors(%Survivor.Entry{} = entry, week_schedule) do
-    week_schedule |>
-      Stream.flat_map(&Survivor.Game.picks_for_game(&1)) |>
-      Stream.map(&with_pick(entry, &1)) |>
+    ordered_picks_for_week = week_schedule |>
+      Enum.flat_map(&Survivor.Game.picks_for_game(&1)) |>
+      Enum.sort_by(&Survivor.Pick.probability(&1), &>=/2)
+
+    # Return a lazy list since it will be large
+    Stream.map(ordered_picks_for_week, &with_pick(entry, &1)) |>
       Stream.filter(&is_legal(&1)) |>
-      Stream.filter(&(survival_probability(&1) > 0.01))
+      Stream.take_while(&(survival_probability(&1) > 0.01))
   end
 end

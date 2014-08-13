@@ -1,6 +1,17 @@
 defmodule Survivor.Game do
   # TODO not sure if we need the week ordinal given the schedule context
-  defstruct home_team: nil, away_team: nil, week: 0
+  defstruct home_team: nil, away_team: nil, week: :no_default, home_victory_probability: :no_default
+
+  def make_game(%Survivor.Team{} = home_team, %Survivor.Team{} = away_team, week) do
+    # TODO totally invented win probability function. Replace with
+    # something real.
+
+    base_p = 0.55 # Home-field advantage
+    dvoa_delta = home_team.dvoa - away_team.dvoa
+    p = base_p + (dvoa_delta / 2.0)
+
+    %Survivor.Game{home_team: home_team, away_team: away_team, week: week, home_victory_probability: p}
+  end
 
   def picks_for_game(game) do
     [false, true] |> Stream.map fn home_victory ->
@@ -9,12 +20,7 @@ defmodule Survivor.Game do
   end
 
   def home_victory_probability(game) do
-    # TODO totally invented win probability function. Replace with
-    # something real.
-
-    base_p = 0.55 # Home-field advantage
-    dvoa_delta = game.home_team.dvoa - game.away_team.dvoa
-    base_p + (dvoa_delta / 2.0)
+    game.home_victory_probability
   end
 end
 

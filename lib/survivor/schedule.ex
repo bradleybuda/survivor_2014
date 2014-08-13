@@ -12,7 +12,7 @@ defmodule Survivor.Schedule do
       {week, _} = Integer.parse(week_s)
       away_team = Survivor.Team.get(teams, away_team_name)
       home_team = Survivor.Team.get(teams, home_team_name)
-      %Survivor.Game{week: week, away_team: away_team, home_team: home_team}
+      Survivor.Game.make_game(home_team, away_team, week)
     end
 
     by_week_dict = Enum.group_by all_games, fn game -> game.week end

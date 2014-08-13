@@ -7,38 +7,38 @@ defmodule Survivor.EntryTest do
   end
 
   test "a single-pick entry is legal" do
-    game = %Survivor.Game{home_team: %Survivor.Team{name: "DET"}, away_team: %Survivor.Team{name: "CHI"}, week: 1}
+    game = Survivor.Game.make_game(%Survivor.Team{name: "DET"}, %Survivor.Team{name: "CHI"}, 1)
     pick = %Survivor.Pick{game: game, home_victory: true}
     entry = with_pick(empty, pick)
     assert is_legal(entry)
   end
 
   test "legal to pick two different teams" do
-    game_1 = %Survivor.Game{home_team: %Survivor.Team{name: "DET"}, away_team: %Survivor.Team{name: "CHI"}, week: 1}
+    game_1 = Survivor.Game.make_game(%Survivor.Team{name: "DET"}, %Survivor.Team{name: "CHI"}, 1)
     pick_1 = %Survivor.Pick{game: game_1, home_victory: true}
-    game_2 = %Survivor.Game{home_team: %Survivor.Team{name: "SEA"}, away_team: %Survivor.Team{name: "NO"}, week: 2}
+    game_2 = Survivor.Game.make_game(%Survivor.Team{name: "SEA"}, %Survivor.Team{name: "NO"}, 2)
     pick_2 = %Survivor.Pick{game: game_2, home_victory: true}
     entry = with_pick(with_pick(empty, pick_1), pick_2)
     assert is_legal(entry)
   end
 
   test "illegal to pick the same team twice" do
-    game_1 = %Survivor.Game{home_team: %Survivor.Team{name: "DET"}, away_team: %Survivor.Team{name: "CHI"}, week: 1}
+    game_1 = Survivor.Game.make_game(%Survivor.Team{name: "DET"}, %Survivor.Team{name: "CHI"}, 1)
     pick_1 = %Survivor.Pick{game: game_1, home_victory: true}
-    game_2 = %Survivor.Game{home_team: %Survivor.Team{name: "GB"}, away_team: %Survivor.Team{name: "DET"}, week: 2}
+    game_2 = Survivor.Game.make_game(%Survivor.Team{name: "GB"}, %Survivor.Team{name: "DET"}, 2)
     pick_2 = %Survivor.Pick{game: game_2, home_victory: false}
     entry = with_pick(with_pick(empty, pick_1), pick_2)
     assert is_legal(entry) == false
   end
 
   test "illegal to pick against the same team more than 3 times" do
-    game_1 = %Survivor.Game{home_team: %Survivor.Team{name: "DET"}, away_team: %Survivor.Team{name: "SF"}, week: 1}
+    game_1 = Survivor.Game.make_game(%Survivor.Team{name: "DET"}, %Survivor.Team{name: "SF"}, 1)
     pick_1 = %Survivor.Pick{game: game_1, home_victory: true}
-    game_2 = %Survivor.Game{home_team: %Survivor.Team{name: "SF"}, away_team: %Survivor.Team{name: "STL"}, week: 2}
+    game_2 = Survivor.Game.make_game(%Survivor.Team{name: "SF"}, %Survivor.Team{name: "STL"}, 2)
     pick_2 = %Survivor.Pick{game: game_2, home_victory: false}
-    game_3 = %Survivor.Game{home_team: %Survivor.Team{name: "SF"}, away_team: %Survivor.Team{name: "SEA"}, week: 3}
+    game_3 = Survivor.Game.make_game(%Survivor.Team{name: "SF"}, %Survivor.Team{name: "SEA"}, 3)
     pick_3 = %Survivor.Pick{game: game_3, home_victory: false}
-    game_4 = %Survivor.Game{home_team: %Survivor.Team{name: "PIT"}, away_team: %Survivor.Team{name: "SF"}, week: 4}
+    game_4 = Survivor.Game.make_game(%Survivor.Team{name: "PIT"}, %Survivor.Team{name: "SF"}, 4)
     pick_4 = %Survivor.Pick{game: game_4, home_victory: true}
 
     entry = empty |>
