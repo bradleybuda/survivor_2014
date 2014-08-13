@@ -9,7 +9,7 @@ defmodule Survivor.EntryTest do
   test "a single-pick entry is legal" do
     game = %Survivor.Game{home_team: %Survivor.Team{name: "DET"}, away_team: %Survivor.Team{name: "CHI"}, week: 1}
     pick = %Survivor.Pick{game: game, home_victory: true}
-    entry = with_pick(empty(), pick)
+    entry = with_pick(empty, pick)
     assert is_legal(entry)
   end
 
@@ -18,7 +18,7 @@ defmodule Survivor.EntryTest do
     pick_1 = %Survivor.Pick{game: game_1, home_victory: true}
     game_2 = %Survivor.Game{home_team: %Survivor.Team{name: "SEA"}, away_team: %Survivor.Team{name: "NO"}, week: 2}
     pick_2 = %Survivor.Pick{game: game_2, home_victory: true}
-    entry = with_pick(with_pick(empty(), pick_1), pick_2)
+    entry = with_pick(with_pick(empty, pick_1), pick_2)
     assert is_legal(entry)
   end
 
@@ -27,7 +27,7 @@ defmodule Survivor.EntryTest do
     pick_1 = %Survivor.Pick{game: game_1, home_victory: true}
     game_2 = %Survivor.Game{home_team: %Survivor.Team{name: "GB"}, away_team: %Survivor.Team{name: "DET"}, week: 2}
     pick_2 = %Survivor.Pick{game: game_2, home_victory: false}
-    entry = with_pick(with_pick(empty(), pick_1), pick_2)
+    entry = with_pick(with_pick(empty, pick_1), pick_2)
     assert is_legal(entry) == false
   end
 
@@ -53,7 +53,7 @@ defmodule Survivor.EntryTest do
   test "empty entry has 32 successors" do
     teams = Survivor.Team.load_all_from_disk
     [week_1|_] = Survivor.Schedule.load_from_disk(teams)
-    successors = successors(empty(), week_1)
+    successors = successors(empty, week_1)
     assert 32 == length(Enum.to_list(successors))
   end
 
@@ -63,7 +63,7 @@ defmodule Survivor.EntryTest do
     [week1, week2|_] = schedule
     [game1|_] = week1
     pick = %Survivor.Pick{game: game1, home_victory: true}
-    entry = with_pick(empty(), pick)
+    entry = with_pick(empty, pick)
     successors = successors(entry, week2)
     assert 31 == length(Enum.to_list(successors))
   end
@@ -75,7 +75,7 @@ defmodule Survivor.EntryTest do
   end
 
   test "empty entry has a 100% survival probability" do
-    assert 1.0 == survival_probability(empty())
+    assert 1.0 == survival_probability(empty)
   end
 
   test "entry with one pick has that pick's survival probability" do
