@@ -14,7 +14,7 @@ defmodule Survivor.Entry do
     entry.picks == []
   end
 
-  def with_pick(%Survivor.Entry{} = entry, pick) do
+  def with_pick(%Survivor.Entry{} = entry, %Survivor.Pick{} = pick) do
     %Survivor.Entry{picks: [pick|entry.picks]}
   end
 
@@ -84,17 +84,3 @@ defmodule Survivor.Entry do
       Stream.filter(&(survival_probability(&1) > 0.01))
   end
 end
-
-#defimpl Enumerable, for: Survivor.Entry do
-#  def count(entry) do
-#    Enum.count(entry.picks)
-#  end
-
-#  def member?(entry, item) do
-#    Enum.member?(entry.picks, item)
-#  end
-
-#  def reduce(entry, acc, func) do
-#    Enum.reduce(entry.picks, acc, func)
-#  end
-#end
