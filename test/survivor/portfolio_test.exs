@@ -47,6 +47,6 @@ defmodule Survivor.PortfolioTest do
   test "enumerate two-entry portfolios" do
     teams = Survivor.Team.load_all_from_disk
     schedule = Survivor.Schedule.load_from_disk(teams)
-    IO.inspect all_two_entry(Enum.take(schedule, 2))
+    all_two_entry(Enum.take(schedule, 2))
   end
 end
