@@ -43,4 +43,10 @@ defmodule Survivor.PortfolioTest do
     portfolio = [entry_1, entry_2]
     assert_in_delta survival_probability(portfolio), 1.0, 0.001
   end
+
+  test "enumerate two-entry portfolios" do
+    teams = Survivor.Team.load_all_from_disk
+    schedule = Survivor.Schedule.load_from_disk(teams)
+    IO.inspect all_two_entry(Enum.take(schedule, 2))
+  end
 end

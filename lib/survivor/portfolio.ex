@@ -7,6 +7,23 @@ defmodule Survivor.Portfolio do
     [entry|portfolio]
   end
 
+  def all_two_entry(schedule) do
+    {:ok, entries} = Survivor.Entry.all(schedule) |> Enum.to_list |> Enum.fetch(1)
+    entries_list = Enum.to_list(entries)
+    IO.inspect entries_list
+    all_two_entry_recur(entries_list)
+  end
+
+  defp all_two_entry_recur([first,second]) do
+    [[first,second]]
+  end
+
+  defp all_two_entry_recur([first|rest]) do
+    with_first = Enum.map rest, fn entry -> [first,entry] end
+    with_first ++ all_two_entry_recur(rest)
+  end
+
+
   @doc """
   The probability that a portfolio is still alive is the sum of the
   probabilities of any of its subportfolios being alive.
