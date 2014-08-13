@@ -3,14 +3,8 @@ defmodule Survivor.Portfolio do
     []
   end
 
-  # TODO this is different that the other ctors...
-  def empty_with_entries(entry_count) do
-    case entry_count do
-      0 ->
-        []
-      _ ->
-        [Survivor.Entry.empty()|empty_with_entries(entry_count - 1)]
-    end
+  def with_entry(portfolio, entry) do
+    [entry|portfolio]
   end
 
   @doc """

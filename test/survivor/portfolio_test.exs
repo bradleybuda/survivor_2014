@@ -8,7 +8,7 @@ defmodule Survivor.PortfolioTest do
   end
 
   test "create an empty portfolio" do
-    empty_with_entries(3)
+    empty
   end
 
   test "a single-entry portfolio has a survival probability", %{schedule: schedule} do
@@ -21,11 +21,11 @@ defmodule Survivor.PortfolioTest do
   end
 
   test "an empty portfolio has zero survival probability" do
-    assert 0.0 == survival_probability(empty_with_entries(0))
+    assert 0.0 == survival_probability(empty)
   end
 
   test "a portfolio with completed entries has 100% survival" do
-    assert 1.0 == survival_probability(empty_with_entries(4))
+    assert 1.0 == survival_probability(with_entry(empty, Survivor.Entry.empty()))
   end
 
   test "a portfolio with three identical entries does not increase survival probability", %{schedule: schedule} do
