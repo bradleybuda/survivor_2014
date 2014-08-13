@@ -1,10 +1,11 @@
 TODO
 ========
 
+* Make entry enumeration greedy (best picks first)
+* How to conduct search without being exhaustive?
 * Search portfolio of strategies
 * More portfolio scoring tests
 * Visualize portfolio evolution
-* How to conduct search?
 * Memoize recursive computations
 * Adjust probability toward mean over time
 * Which metric - final survival? survival at week N? cumulative survival?
