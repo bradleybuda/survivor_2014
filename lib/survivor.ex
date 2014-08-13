@@ -1,2 +1,0 @@
-defmodule Survivor do
-end

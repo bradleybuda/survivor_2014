@@ -10,7 +10,6 @@ defmodule Survivor.Portfolio do
   def all_two_entry(schedule) do
     {:ok, entries} = Survivor.Entry.all(schedule) |> Enum.to_list |> Enum.fetch(1)
     entries_list = Enum.to_list(entries)
-    IO.inspect entries_list
     all_two_entry_recur(entries_list)
   end
 
