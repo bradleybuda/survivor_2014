@@ -25,6 +25,6 @@ defmodule Survivor.Mixfile do
   #
   # Type `mix help deps` for more examples and options
   defp deps do
-    [{:csvlixir, "1.0.0"}]
+    [{:csvlixir, "1.0.0"}, {:exprof, "0.1.2"}]
   end
 end

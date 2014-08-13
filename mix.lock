@@ -1,1 +1,3 @@
-%{"csvlixir": {:package, "1.0.0"}}
+%{"csvlixir": {:package, "1.0.0"},
+  "exprintf": {:package, "0.1.4"},
+  "exprof": {:package, "0.1.2"}}
