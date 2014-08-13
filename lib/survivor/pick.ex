@@ -2,14 +2,17 @@ defmodule Survivor.Pick do
   defstruct game: nil, home_victory: false
 
   def winner(pick) do
-    [winner, _] = winner_and_loser pick
-    winner
+    team_with_result pick.game, pick.home_victory, :winner
   end
 
   def loser(pick) do
-    [_, loser] = winner_and_loser pick
-    loser
+    team_with_result pick.game, pick.home_victory, :loser
   end
+
+  defp team_with_result(game, true, :winner), do: game.home_team
+  defp team_with_result(game, false, :winner), do: game.away_team
+  defp team_with_result(game, true, :loser), do: game.away_team
+  defp team_with_result(game, false, :loser), do: game.home_team
 
   def probability(pick) do
     home_victory_p = Survivor.Game.home_victory_probability(pick.game)
@@ -24,17 +27,6 @@ defmodule Survivor.Pick do
 
   def not(pick) do
     %{pick | home_victory: !pick.home_victory}
-  end
-
-  defp winner_and_loser(pick) do
-    game = pick.game
-    teams = [game.home_team, game.away_team]
-    case pick.home_victory do
-      true ->
-        teams
-      false ->
-        Enum.reverse(teams)
-    end
   end
 end
 
