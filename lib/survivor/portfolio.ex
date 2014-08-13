@@ -1,4 +1,9 @@
 defmodule Survivor.Portfolio do
+  def empty() do
+    []
+  end
+
+  # TODO this is different that the other ctors...
   def empty_with_entries(entry_count) do
     case entry_count do
       0 ->
@@ -9,13 +14,10 @@ defmodule Survivor.Portfolio do
   end
 
   @doc """
-
   The probability that a portfolio is still alive is the sum of the
   probabilities of any of its subportfolios being alive.
-
   """
 
-  # TODO broken
   def survival_probability(portfolio) do
     case portfolio do
       [] ->
@@ -25,18 +27,17 @@ defmodule Survivor.Portfolio do
         Survivor.Entry.survival_probability(entry)
       [entry|_] ->
         # Multiple entries are alive in the portfolio
-        case entry do
-          [] ->
-            1.0 # We've reached the "end" of this entry, so we've survived!
-          _ ->
-            # The entries still have picks remaining, time for the
-            # complex porfolio math
-            outcomes = possible_outcomes(portfolio)
-            Enum.reduce Dict.keys(outcomes), 0, fn (outcome, cumulative_p) ->
-              {:ok, outcome_portfolio} = Dict.fetch(outcomes, outcome)
-              # TODO - short-circuit recursion if probability = 0
-              cumulative_p + Survivor.PickSet.probability(outcome) * survival_probability(outcome_portfolio)
-            end
+        if Survivor.Entry.is_empty?(entry) do
+          1.0 # We've reached the "end" of this entry, so we've survived!
+        else
+          # The entries still have picks remaining, time for the
+          # complex porfolio math
+          outcomes = possible_outcomes(portfolio)
+          Enum.reduce Dict.keys(outcomes), 0, fn (outcome, cumulative_p) ->
+            {:ok, outcome_portfolio} = Dict.fetch(outcomes, outcome)
+            # TODO - short-circuit recursion if probability = 0
+            cumulative_p + Survivor.PickSet.probability(outcome) * survival_probability(outcome_portfolio)
+          end
         end
     end
   end
@@ -55,7 +56,7 @@ defmodule Survivor.Portfolio do
   # TODO make me private
   def possible_outcomes(portfolio) do
     # Base case: no games picked, no subsequent portfolio
-    empty_outcome = Dict.put(HashDict.new, Survivor.PickSet.empty(), [])
+    empty_outcome = Dict.put(HashDict.new, Survivor.PickSet.empty(), Survivor.Portfolio.empty())
     possible_outcomes_recursive(portfolio, empty_outcome)
   end
 
@@ -64,12 +65,7 @@ defmodule Survivor.Portfolio do
       [] ->
         outcomes # Nothing remaining in the portfolio
       [entry|remaining_portfolio] ->
-        # The portfolios are actually in reverse order, so go find the
-        # next chronological game at the end of the list. TODO how do
-        # we make this efficient? Feels broken.
-        # At least should add some helper methods to entry
-        [pick|remaining_reversed] = Enum.reverse(entry)
-        remaining_entry = Enum.reverse(remaining_reversed)
+        {pick,remaining_entry} = Survivor.Entry.without_first_pick(entry)
 
         # Take each of the outcomes for this entry and add them to
         # each of the existing outcomes
