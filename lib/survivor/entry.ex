@@ -35,6 +35,7 @@ defmodule Survivor.Entry do
     Survivor.Pick.probability(pick) * survival_probability_of_picks(rest)
   end
 
+  # TODO this is slow
   def is_legal(%Survivor.Entry{} = entry) do
     Dict.values(team_pick_counts(entry.picks)) |> Enum.all? fn team_pick_count ->
       case team_pick_count do
