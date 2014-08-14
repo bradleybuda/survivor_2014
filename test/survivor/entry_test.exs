@@ -2,43 +2,47 @@ defmodule Survivor.EntryTest do
   use ExUnit.Case, async: true
   import Survivor.Entry
 
+  setup do
+    {:ok, teams: Survivor.Team.load_all_from_disk}
+  end
+
   test "an empty entry is legal" do
     assert is_legal(empty)
   end
 
-  test "a single-pick entry is legal" do
-    game = Survivor.Game.make_game(%Survivor.Team{name: "DET"}, %Survivor.Team{name: "CHI"}, 1)
+  test "a single-pick entry is legal", %{teams: teams} do
+    game = Survivor.Game.make_game Survivor.Team.get(teams, "DET"), Survivor.Team.get(teams, "CHI"), 1
     pick = %Survivor.Pick{game: game, home_victory: true}
     entry = with_pick(empty, pick)
     assert is_legal(entry)
   end
 
-  test "legal to pick two different teams" do
-    game_1 = Survivor.Game.make_game(%Survivor.Team{name: "DET"}, %Survivor.Team{name: "CHI"}, 1)
+  test "legal to pick two different teams", %{teams: teams} do
+    game_1 = Survivor.Game.make_game Survivor.Team.get(teams, "DET"), Survivor.Team.get(teams, "CHI"), 1
     pick_1 = %Survivor.Pick{game: game_1, home_victory: true}
-    game_2 = Survivor.Game.make_game(%Survivor.Team{name: "SEA"}, %Survivor.Team{name: "NO"}, 2)
+    game_2 = Survivor.Game.make_game Survivor.Team.get(teams, "SEA"), Survivor.Team.get(teams, "NO"), 2
     pick_2 = %Survivor.Pick{game: game_2, home_victory: true}
     entry = with_pick(with_pick(empty, pick_1), pick_2)
     assert is_legal(entry)
   end
 
-  test "illegal to pick the same team twice" do
-    game_1 = Survivor.Game.make_game(%Survivor.Team{name: "DET"}, %Survivor.Team{name: "CHI"}, 1)
+  test "illegal to pick the same team twice", %{teams: teams} do
+    game_1 = Survivor.Game.make_game Survivor.Team.get(teams, "DET"), Survivor.Team.get(teams, "CHI"), 1
     pick_1 = %Survivor.Pick{game: game_1, home_victory: true}
-    game_2 = Survivor.Game.make_game(%Survivor.Team{name: "GB"}, %Survivor.Team{name: "DET"}, 2)
+    game_2 = Survivor.Game.make_game Survivor.Team.get(teams, "GB"), Survivor.Team.get(teams, "DET"), 2
     pick_2 = %Survivor.Pick{game: game_2, home_victory: false}
     entry = with_pick(with_pick(empty, pick_1), pick_2)
     assert is_legal(entry) == false
   end
 
-  test "illegal to pick against the same team more than 3 times" do
-    game_1 = Survivor.Game.make_game(%Survivor.Team{name: "DET"}, %Survivor.Team{name: "SF"}, 1)
+  test "illegal to pick against the same team more than 3 times", %{teams: teams} do
+    game_1 = Survivor.Game.make_game Survivor.Team.get(teams, "DET"), Survivor.Team.get(teams, "SF"), 1
     pick_1 = %Survivor.Pick{game: game_1, home_victory: true}
-    game_2 = Survivor.Game.make_game(%Survivor.Team{name: "SF"}, %Survivor.Team{name: "STL"}, 2)
+    game_2 = Survivor.Game.make_game Survivor.Team.get(teams, "SF"), Survivor.Team.get(teams, "STL"), 2
     pick_2 = %Survivor.Pick{game: game_2, home_victory: false}
-    game_3 = Survivor.Game.make_game(%Survivor.Team{name: "SF"}, %Survivor.Team{name: "SEA"}, 3)
+    game_3 = Survivor.Game.make_game Survivor.Team.get(teams, "SF"), Survivor.Team.get(teams, "SEA"), 3
     pick_3 = %Survivor.Pick{game: game_3, home_victory: false}
-    game_4 = Survivor.Game.make_game(%Survivor.Team{name: "PIT"}, %Survivor.Team{name: "SF"}, 4)
+    game_4 = Survivor.Game.make_game Survivor.Team.get(teams, "PIT"), Survivor.Team.get(teams, "SF"), 4
     pick_4 = %Survivor.Pick{game: game_4, home_victory: true}
 
     entry = empty |>
@@ -94,6 +98,6 @@ defmodule Survivor.EntryTest do
     [_, _, week_3_strategies|_] = all
     [entry] = week_3_strategies |> Enum.take(1)
 
-    assert survival_probability(entry) < 0.5
+    assert survival_probability(entry) < 1
   end
 end

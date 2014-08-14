@@ -1,7 +1,6 @@
 TODO
 ========
 
-* WHY AREN'T ALL THE TESTS RUNNING?
 * Make entry enumeration greedy (best picks first)
 * How to conduct search without being exhaustive?
 * Search portfolio of strategies
