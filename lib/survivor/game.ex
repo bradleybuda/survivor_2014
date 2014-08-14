@@ -10,7 +10,11 @@ defmodule Survivor.Game do
     dvoa_delta = home_team.dvoa - away_team.dvoa
     p = base_p + (dvoa_delta / 2.0)
 
-    %Survivor.Game{home_team: home_team, away_team: away_team, week: week, home_victory_probability: p}
+    # HACK try to make p values comparable, some kind of
+    # floating-point craziness is going on here
+    rounded = round(p * 100.0) / 100.0
+
+    %Survivor.Game{home_team: home_team, away_team: away_team, week: week, home_victory_probability: rounded}
   end
 
   def picks_for_game(game) do
