@@ -4,21 +4,44 @@ defmodule Survivor.Entry do
   partial entry that has not yet picked the entire season.
   """
 
-  defstruct picks: []
+  defstruct picks: [], is_legal: true, winners: HashSet.new, one_time_losers: HashSet.new, two_time_losers: HashSet.new, three_time_losers: HashSet.new
 
   def empty() do
     %Survivor.Entry{}
+  end
+
+  def with_pick(%Survivor.Entry{picks: picks, winners: winners, one_time_losers: one_time_losers, two_time_losers: two_time_losers, three_time_losers: three_time_losers}, %Survivor.Pick{} = pick) do
+    winner = Survivor.Pick.winner pick
+    new_winners = Set.put winners, winner
+
+    loser = Survivor.Pick.loser pick
+
+    is_one_time_loser = Set.member? one_time_losers, loser
+    new_one_time_losers = Set.put one_time_losers, loser
+
+    {is_two_time_loser, new_two_time_losers} = if is_one_time_loser do
+      {Set.member?(two_time_losers, loser), Set.put(two_time_losers, loser)}
+    else
+      {false, two_time_losers}
+    end
+
+    {is_three_time_loser, new_three_time_losers} = if is_two_time_loser do
+      {Set.member?(three_time_losers, loser), Set.put(three_time_losers, loser)}
+    else
+      {false, three_time_losers}
+    end
+
+    is_legal = (!Set.member?(winners, winner)) && !is_three_time_loser
+
+    %Survivor.Entry{picks: [pick|picks], is_legal: is_legal, winners: new_winners, one_time_losers: new_one_time_losers, two_time_losers: new_two_time_losers, three_time_losers: new_three_time_losers}
   end
 
   def is_empty?(%Survivor.Entry{} = entry) do
     entry.picks == []
   end
 
-  def with_pick(%Survivor.Entry{} = entry, %Survivor.Pick{} = pick) do
-    %Survivor.Entry{picks: [pick|entry.picks]}
-  end
-
   def without_first_pick(%Survivor.Entry{} = entry) do
+    # TODO this reversing feels broken
     [pick|remaining_reversed] = Enum.reverse(entry.picks)
     {pick, %Survivor.Entry{picks: Enum.reverse(remaining_reversed)}}
   end
@@ -35,36 +58,8 @@ defmodule Survivor.Entry do
     Survivor.Pick.probability(pick) * survival_probability_of_picks(rest)
   end
 
-  # TODO this is slow
   def is_legal(%Survivor.Entry{} = entry) do
-    Dict.values(team_pick_counts(entry.picks)) |> Enum.all? fn team_pick_count ->
-      case team_pick_count do
-        {wins, losses} when wins > 1 or losses > 3 ->
-          false
-        _ ->
-          true
-      end
-    end
-  end
-
-  defp team_pick_counts([]) do
-    %{}
-  end
-
-  defp team_pick_counts([pick|rest]) do
-    counts = team_pick_counts(rest)
-    winner = Survivor.Pick.winner(pick)
-    loser = Survivor.Pick.loser(pick)
-
-    dict_with_winner = Dict.update counts, winner, {1, 0}, fn r ->
-      {wins, losses} = r
-      {wins + 1, losses}
-    end
-
-    Dict.update dict_with_winner, loser, {0, 1}, fn r ->
-      {wins, losses} = r
-      {wins, losses + 1}
-    end
+    entry.is_legal
   end
 
   @doc """

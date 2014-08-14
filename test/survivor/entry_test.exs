@@ -35,6 +35,22 @@ defmodule Survivor.EntryTest do
     assert is_legal(entry) == false
   end
 
+  test "legal to pick against the same team three times", %{teams: teams} do
+    game_1 = Survivor.Game.make_game Survivor.Team.get(teams, "DET"), Survivor.Team.get(teams, "SF"), 1
+    pick_1 = %Survivor.Pick{game: game_1, home_victory: true}
+    game_2 = Survivor.Game.make_game Survivor.Team.get(teams, "SF"), Survivor.Team.get(teams, "STL"), 2
+    pick_2 = %Survivor.Pick{game: game_2, home_victory: false}
+    game_3 = Survivor.Game.make_game Survivor.Team.get(teams, "SF"), Survivor.Team.get(teams, "SEA"), 3
+    pick_3 = %Survivor.Pick{game: game_3, home_victory: false}
+
+    entry = empty |>
+      with_pick(pick_1) |>
+      with_pick(pick_2) |>
+      with_pick(pick_3)
+
+    assert is_legal(entry)
+  end
+
   test "illegal to pick against the same team more than 3 times", %{teams: teams} do
     game_1 = Survivor.Game.make_game Survivor.Team.get(teams, "DET"), Survivor.Team.get(teams, "SF"), 1
     pick_1 = %Survivor.Pick{game: game_1, home_victory: true}
