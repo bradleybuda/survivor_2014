@@ -16,24 +16,28 @@ defmodule Survivor.Entry do
 
     loser = Survivor.Pick.loser pick
 
-    is_one_time_loser = Set.member? one_time_losers, loser
+    is_one_time_loser = set_member one_time_losers, loser
     new_one_time_losers = Set.put one_time_losers, loser
 
     {is_two_time_loser, new_two_time_losers} = if is_one_time_loser do
-      {Set.member?(two_time_losers, loser), Set.put(two_time_losers, loser)}
+      {set_member(two_time_losers, loser), Set.put(two_time_losers, loser)}
     else
       {false, two_time_losers}
     end
 
     {is_three_time_loser, new_three_time_losers} = if is_two_time_loser do
-      {Set.member?(three_time_losers, loser), Set.put(three_time_losers, loser)}
+      {set_member(three_time_losers, loser), Set.put(three_time_losers, loser)}
     else
       {false, three_time_losers}
     end
 
-    is_legal = (!Set.member?(winners, winner)) && !is_three_time_loser
+    is_legal = (!set_member(winners, winner)) && !is_three_time_loser
 
     %Survivor.Entry{picks: [pick|picks], is_legal: is_legal, winners: new_winners, one_time_losers: new_one_time_losers, two_time_losers: new_two_time_losers, three_time_losers: new_three_time_losers}
+  end
+
+  defp set_member(set, entry) do
+    Set.member?(set, entry)
   end
 
   def is_empty?(%Survivor.Entry{} = entry) do
