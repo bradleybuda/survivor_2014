@@ -12,6 +12,12 @@ defmodule Survivor.Profiler do
     :timer.tc(Survivor.Profiler, :do_work, [])
   end
 
+  def fprof do
+    :fprof.apply fn -> do_work end, []
+    :fprof.profile
+    :fprof.analyse
+  end
+
   def do_work do
     teams = Survivor.Team.load_all_from_disk
     schedule = Survivor.Schedule.load_from_disk(teams)
