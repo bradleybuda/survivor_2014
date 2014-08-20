@@ -4,7 +4,9 @@ defmodule Survivor.Entry do
   partial entry that has not yet picked the entire season.
   """
 
-  defstruct picks: [], is_legal: true, winners: HashSet.new, one_time_losers: HashSet.new, two_time_losers: HashSet.new, three_time_losers: HashSet.new
+  defstruct picks: [], is_legal: true, winners: 0, one_time_losers: 0, two_time_losers: 0, three_time_losers: 0
+
+  import Bitwise
 
   def empty() do
     %Survivor.Entry{}
@@ -12,21 +14,21 @@ defmodule Survivor.Entry do
 
   def with_pick(%Survivor.Entry{picks: picks, winners: winners, one_time_losers: one_time_losers, two_time_losers: two_time_losers, three_time_losers: three_time_losers}, %Survivor.Pick{} = pick) do
     winner = Survivor.Pick.winner pick
-    new_winners = Set.put winners, winner
+    new_winners = set_put winners, winner
 
     loser = Survivor.Pick.loser pick
 
     is_one_time_loser = set_member one_time_losers, loser
-    new_one_time_losers = Set.put one_time_losers, loser
+    new_one_time_losers = set_put one_time_losers, loser
 
     {is_two_time_loser, new_two_time_losers} = if is_one_time_loser do
-      {set_member(two_time_losers, loser), Set.put(two_time_losers, loser)}
+      {set_member(two_time_losers, loser), set_put(two_time_losers, loser)}
     else
       {false, two_time_losers}
     end
 
     {is_three_time_loser, new_three_time_losers} = if is_two_time_loser do
-      {set_member(three_time_losers, loser), Set.put(three_time_losers, loser)}
+      {set_member(three_time_losers, loser), set_put(three_time_losers, loser)}
     else
       {false, three_time_losers}
     end
@@ -36,8 +38,12 @@ defmodule Survivor.Entry do
     %Survivor.Entry{picks: [pick|picks], is_legal: is_legal, winners: new_winners, one_time_losers: new_one_time_losers, two_time_losers: new_two_time_losers, three_time_losers: new_three_time_losers}
   end
 
-  defp set_member(set, entry) do
-    Set.member?(set, entry)
+  defp set_put(set, team) do
+    set ||| team.bit
+  end
+
+  defp set_member(set, team) do
+    (set &&& team.bit) != 0
   end
 
   def is_empty?(%Survivor.Entry{} = entry) do
