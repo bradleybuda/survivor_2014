@@ -70,7 +70,7 @@ defmodule Survivor.PickSetTest do
     assert pick_set_1 == pick_set_2
   end
 
-  test "order of picks in set does not change its identity" do
+  test "order of picks in set does not change its dictionary identity" do
     [week1|_] = Survivor.Schedule.load_from_disk(Survivor.Team.load_all_from_disk)
     [game1,game2|_] = week1
     pick1 = %Survivor.Pick{game: game1, home_victory: true}
@@ -79,6 +79,7 @@ defmodule Survivor.PickSetTest do
     pick_set_1 = Enum.reduce [pick1, pick2], empty, &add(&2, &1)
     pick_set_2 = Enum.reduce [pick2, pick1], empty, &add(&2, &1)
 
-    assert pick_set_1 == pick_set_2
+    d = Map.new |> Dict.put(pick_set_1, :key) |> Dict.put(pick_set_2, :key)
+    assert 1 == Dict.size(d)
   end
 end

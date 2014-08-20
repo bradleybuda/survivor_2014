@@ -3,18 +3,19 @@
 # of the picks in the list to come true. Lists are allowed to be
 # internally inconsistent, in which case they have probability zero.
 defmodule Survivor.PickSet do
-  defstruct picks: HashSet.new
+  defstruct picks: []
 
   def empty() do
     %Survivor.PickSet{}
   end
 
-  def add(pick_set, pick) do
-    %Survivor.PickSet{picks: Set.put(pick_set.picks, pick)}
+  def add(%Survivor.PickSet{} = pick_set, pick) do
+    new_picks = Enum.sort(Enum.uniq([pick|pick_set.picks]))
+    %Survivor.PickSet{picks: new_picks}
   end
 
   def probability(pick_set) do
-    probability_with_encounters Set.to_list(pick_set.picks), [], []
+    probability_with_encounters pick_set.picks, [], []
   end
 
   defp probability_with_encounters(pick_list, picks_encountered, games_encountered) do
