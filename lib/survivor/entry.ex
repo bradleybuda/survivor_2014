@@ -93,3 +93,9 @@ defmodule Survivor.Entry do
       Stream.take_while(&(survival_probability(&1) > 0.01))
   end
 end
+
+defimpl Inspect, for: Survivor.Entry do
+  def inspect(entry, _) do
+    inspect Enum.reverse(entry.picks)
+  end
+end

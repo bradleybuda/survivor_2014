@@ -111,8 +111,8 @@ defmodule Survivor.EntryTest do
     teams = Survivor.Team.load_all_from_disk
     schedule = Survivor.Schedule.load_from_disk(teams)
     all = all(schedule) |> Enum.to_list
-    [_, _, week_3_strategies|_] = all
-    [entry] = week_3_strategies |> Enum.take(1)
+    week_3_strategies = Enum.at all, 2
+    entry = Enum.at week_3_strategies, 1
 
     assert survival_probability(entry) < 1
   end
